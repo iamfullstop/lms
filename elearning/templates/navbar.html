@@ -1,0 +1,121 @@
+<nav class="bg-white shadow-md rounded-b-lg">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+    <!-- Logo and Mobile Menu Toggle -->
+    <div class="flex items-center">
+      <a href="{% url 'home' %}" class="font-bold text-2xl text-blue-600 mr-8">ShikyalayaGyan</a>
+      <button id="mobile-menu-button" class="md:hidden text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-2">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Desktop Nav -->
+    <div class="hidden md:flex flex-grow items-center justify-between">
+      <!-- Explore Dropdown -->
+      <div class="relative group mr-6">
+        <button class="flex items-center text-gray-700 hover:text-blue-600 font-medium py-2 px-3 rounded-md transition duration-200">
+          Explore
+          <i class="fas fa-chevron-down ml-2 text-xs"></i>
+        </button>
+        <div class="absolute hidden group-hover:block bg-white shadow-lg rounded-md mt-2 py-2 w-48 z-10">
+          <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Courses</a>
+          <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Degrees</a>
+          <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Certificates</a>
+          <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Specializations</a>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="flex-grow max-w-xl mx-auto relative">
+        <input type="text" placeholder="What do you want to learn?" class="input-field pl-10 w-full pr-4 py-2 rounded-full border border-gray-200 focus:border-blue-500 focus:ring-0 shadow-sm" />
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+      </div>
+
+      <!-- User Links -->
+      <div class="flex items-center ml-6">
+        {% if request.user.is_authenticated %}
+        <div class="relative">
+          <button id="user-menu-button" class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-600 text-white font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            {{ request.user.username|first|upper }}
+          </button>
+          <div id="user-dropdown-menu" class="absolute right-0 mt-2 w-52 bg-white rounded-md shadow-lg py-1 hidden z-20">
+            <a href="{% url 'change_password' %}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Change Password</a>
+
+            {% if request.user.role == 'teacher' %}
+              <a href="" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Add Course</a>
+              <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">My Courses</a>
+            {% elif request.user.role == 'student' %}
+              <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Enrolled Courses</a>
+              <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">My Certificates</a>
+            {% endif %}
+
+            <a href="" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Edit Profile</a>
+          
+            <a href="{% url 'logout' %}" class="block px-4 py-2 text-red-600 hover:bg-red-50">Logout</a>
+          </div>
+        </div>
+        {% else %}
+        <a href="{% url 'login' %}" class="text-blue-600 font-medium px-4 py-2 rounded-md border border-blue-600 transition-all duration-200 hover:bg-blue-50 hover:text-blue-800 mx-2 ">Log In</a>
+        <a href="{% url 'register' %}" class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-md shadow hover:bg-blue-700 transition-all duration-200">Join for Free</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pt-2 pb-4 shadow-inner">
+    <div class="flex flex-col space-y-2">
+      <a href="#" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Explore Courses</a>
+      <a href="#" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Explore Degrees</a>
+      <div class="relative">
+        <input type="text" placeholder="What do you want to learn?" class="input-field pl-10 pr-4 py-2 rounded-md" />
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+      </div>
+
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'change_password' %}" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Change Password</a>
+
+        {% if request.user.role == 'teacher' %}
+          <a href="" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Add Course</a>
+          <a href="#" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">My Courses</a>
+        {% elif request.user.role == 'student' %}
+          <a href="#" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Enrolled Courses</a>
+          <a href="#" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">My Certificates</a>
+        {% endif %}
+
+       <a href="" class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md">Edit Profile</a>
+    </hr>
+        <a href="{% url 'logout' %}" class="block px-3 py-2 text-red-600 hover:bg-red-50 rounded-md">Logout</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="block px-3 py-2 text-blue-600 hover:bg-gray-100 rounded-md">Log In</a>
+        <a href="{% url 'register' %}" class="btn-primary text-center">Join for Free</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Toggle mobile menu
+  document.getElementById('mobile-menu-button').addEventListener('click', () => {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('hidden');
+  });
+
+  // Toggle user dropdown menu
+  document.getElementById('user-menu-button')?.addEventListener('click', () => {
+    const dropdown = document.getElementById('user-dropdown-menu');
+    dropdown.classList.toggle('hidden');
+  });
+
+  // Optional: Close user dropdown if clicked outside
+  document.addEventListener('click', (e) => {
+    const userBtn = document.getElementById('user-menu-button');
+    const dropdown = document.getElementById('user-dropdown-menu');
+    if (userBtn && dropdown && !userBtn.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+</script>
