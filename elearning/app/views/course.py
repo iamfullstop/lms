@@ -3,6 +3,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from ..models import Course, Section
 
+def published_courses(request):
+    published_courses = Course.objects.filter(is_published=True).order_by('-created_at')
+    context = {
+        'courses': published_courses
+    }
+    return render(request, 'course/published_courses.html', context)
+
 
 @login_required
 def course_create(request):
@@ -39,7 +46,7 @@ def course_create(request):
                 instructor=request.user
             )
             messages.success(request, f"Course '{course.title}' created successfully!")
-            return redirect('create_sections', course_id=course.pk)
+            return redirect('create_section', course_id=course.pk)
         except Exception as e:
             messages.error(request, f"Error creating course: {e}")
 

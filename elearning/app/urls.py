@@ -9,6 +9,8 @@ urlpatterns = [
     path('profile', views.profile, name="profile"),
     path('instructor/', views.instructor_dashboard, name='instructor_dashboard'),
     path('change_password/', views.change_password, name='change_password'),
+    path('publish/', views.published_courses, name='published_courses'),
+
 
     # Course CRUD
     path('course/create/', views.course_create , name='create_courses'),
