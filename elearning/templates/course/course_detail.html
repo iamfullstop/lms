@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block title %}
+<title>{{ course.title }} - Course Details</title>
+{% endblock %}
+
+{% block style %}
+<style>
+  .course-wrap { max-width: 920px; margin: 40px auto; font-family: system-ui, -apple-system, Roboto, "Segoe UI", "Helvetica Neue", Arial; }
+  .card { background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,0.06); overflow:hidden; display:flex; flex-direction:column; }
+  @media(min-width:768px){ .card{flex-direction:row} .img-col {width:33.333%} .content-col{width:66.666%} }
+  .img-col img{width:100%; height:250px; object-fit:contain; margin-top: 50px; display:block}
+  .content{padding:22px}
+  .title{font-size:1.5rem; font-weight:700; color:#0f172a; margin:0}
+  .meta{color:#6b7280; font-size:0.95rem; margin-top:6px}
+  .badges{margin-top:14px}
+  .badge{display:inline-block; margin-right:8px; padding:6px 10px; background:#f3f4f6; border-radius:999px; color:#374151; font-size:0.85rem}
+  .section{margin-top:18px;}
+  .section h3{margin:0 0 8px 0; font-size:1rem}
+  .description{color:#334155; line-height:1.6}
+  .cta{margin-top:18px; display:flex; gap:10px; margin-top: 10px;}
+  .btn-primary{background:#f59e0b;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:600}
+  .btn-ghost{border:1px solid #e5e7eb;padding:10px 14px;border-radius:8px;color:#374151;text-decoration:none}
+  .btn-danger{border:1px solid #e5e7eb;padding:10px 14px;border-radius:8px;color:white;background:red;text-decoration:none}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="course-wrap">
+    <div class="section cta">
+        <a class="btn-ghost" href="{% url 'list_courses' %}">Back to courses</a>
+    </div>
+
+    <div class="card">
+        <div class="img-col">
+            <img src="{{ course.thumbnail_img.url }}" alt="{{ course.title }}">
+        </div>
+        <div class="content-col content">
+            <h1 class="title">{{ course.title }}</h1>
+            <div class="meta">
+                by <strong>{{ course.instructor.full_name }}</strong> 
+                · <span style="float:right;color:#f59e0b">Rs {{ course.price }}</span>
+            </div>
+
+            <div class="badges">
+                <span class="badge">Level: {{ course.level|title }}</span>
+                <span class="badge">Category: {{ course.get_category_display }}</span>
+                {% if course.offer_certificate %}
+                <span class="badge" style="background:#e6fffa;color:#065f46">Certificate Included</span>
+                {% endif %}
+            </div>
+
+            <div class="section">
+                <h3>Course Description</h3>
+                <p class="description">{{ course.description }}</p>
+            </div>
+
+            <div class="section">
+                <h3>Requirements</h3>
+                <ul>
+                    {% for req in course.requirements.splitlines %}
+                        {% if req %}<li>{{ req }}</li>{% endif %}
+                    {% empty %}
+                        <li>No special requirements</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="section cta">
+                <a class="btn-primary" href="{% url 'edit_courses' course.pk %}">Edit Course</a>
+                <a class="m-4 p-2 hover:bg-red-400 text-black rounded-xl border" href="{% url 'delete_courses' course.pk %}">Delete course</a>
+                <a class="m-4 p-2 hover:bg-red-400 text-yellow rounded-xl border" href="{% url 'create_section' course.pk %}">Create Section</a>
+                <a class="m-4 p-2 hover:bg-red-400 text-yellow rounded-xl border" href="{% url 'course_content' course.pk %}">View Section</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

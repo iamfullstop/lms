@@ -1,0 +1,110 @@
+{% extends "layout.html" %} {% block title %}
+<title>Curriculum Section</title>
+{% endblock %} {% block content %}
+<div>
+  <div class="main-container">
+    {% include "sidebar.html" %}
+
+    <div class="content-area">
+      <div class="course-container">
+        <header class="mb-6 text-center text-white flex justify-between items-center">
+          <div>
+            <h1 class="text-2xl font-semibold">
+              Course Curriculum: {{ course.title }}
+            </h1>
+            <p class="text-sm">
+              View your course or add sections, lectures and practice
+              activities.
+            </p>
+          </div>
+
+          <!-- Add Section Button -->
+          <a
+            href="{% url 'create_section' course.pk %}"
+            class="bg-yellow-500 hover:bg-yellow-100 border text-white font-bold py-2 px-4 rounded"
+           >
+            + Add Section
+          </a>
+        </header>
+      </div>
+
+      <!-- Section List -->
+      <div class="bg-white shadow-md rounded-lg p-6">
+        {% if sections %}
+        <ul class="space-y-4">
+          {% for section in sections %}
+          <li class="border-b pb-3">
+            <h2 class="text-lg font-bold">{{ section.title }}</h2>
+
+            {% if section.lectures.all %}
+            <ul class="list-disc ml-6 mt-2">
+              {% for lecture in section.lectures.all %}
+              <li>{{ lecture.title }}</li>
+              {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-500 text-sm mt-1">
+              No lectures in this section yet.
+            </p>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div
+          class="text-center py-8 text-gray-500 border border-dashed rounded-lg"
+        >
+          <div class="flex flex-col items-center justify-center space-y-2">
+            <svg style="height: 100px ; width: 100px" class="text-gray-500"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-12 w-12 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            <h3 class="text-lg font-medium text-gray-600">No sections yet</h3>
+            <p class="text-sm text-gray-500 max-w-md">
+              Start building your course by adding sections. Each section can
+              contain lectures, resources, lectures and other learning
+              materials.
+            </p>
+            <button
+              id="addFirstSectionBtn"
+              class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+            >
+              + Create New  Section
+            </button>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block style %}
+<style>
+  .main-container {
+    display: flex;
+    min-height: 100vh;
+  }
+  .content-area {
+    flex: 1;
+    margin-left: 16rem;
+    padding: 2rem;
+  }
+  .course-container {
+    background-color: #4c51bf;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+  }
+</style>
+{% endblock %}

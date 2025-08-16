@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+<title>Manage Sections - {{ course.title }}</title>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto p-6">
+    <h1 class="text-2xl text-center font-semibold mb-4">Manage Course Curriculum: {{ course.title }}</h1>
+
+
+
+
+    <!-- Add Section Form -->
+    <div class="bg-white p-4 rounded border mb-4">
+        <h2 class="font-bold mb-2">Add Section</h2>
+        <input type="text" id="section-title" placeholder="Section Title" class="border p-1 rounded">
+        <input type="number" id="section-order" placeholder="Order" class="border rounded p-1 w-20">
+        <button id="add-section" class="bg-blue-600 text-black px-3 py-1 rounded">Add</button>
+    </div>
+
+    <!-- Sections & Lectures -->
+    <div id="sections-container">
+        {% for section in sections %}
+        <div class="bg-gray-100 p-3 mb-4 rounded border" data-section-id="{{ section.id }}">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-red-500 ">{{ section.order }}. {{ section.title }}</h3>
+                <button class="delete-section border p-2 rounded-xl text-black bg-red-600">Delete</button>
+            </div>
+
+            <!-- Add Lecture Form -->
+            <div class="mt-2 bg-white p-2 rounded">
+                <input type="text"  class="lecture-title rounded border p-1" placeholder="Lecture Title">
+                <input type="number" class="lecture-order rounded border p-1 w-20" placeholder="Order">
+                <textarea class="lecture-description border p-1 w-full mt-1" placeholder="Description"></textarea>
+                Video:<input type="file"  class="lecture-video border rounded mt-1">
+                Resource:<input type="file" class="lecture-file mx-2  border rounded mt-1">
+                <label for="lecture-preview">
+                Previewable <input type="checkbox" id="lecture-preview" name="is_preview">
+                </label>
+                <button class="add-lecture bg-green-600 text-black px-2 py-1 mt-1 border p-1 rounded">Add Lecture</button>
+            </div>
+
+            <ul class="mt-3 lectures-list">
+                {% for lecture in section.lectures.all %}
+                <li class="flex justify-between items-center border-b py-1">
+                    <span>{{ lecture.order }}. {{ lecture.title }}</span>
+                    <button class="delete-lecture text-red-500" data-lecture-id="{{ lecture.id }}">Delete</button>
+                </li>
+                {% empty %}
+                <li>No lectures yet</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% empty %}
+        <p>No sections yet.</p>
+        {% endfor %}
+    </div>
+        <a href="" 
+   class="bg-pink-800 text-black border rounded-lg px-4 py-2 rounded mt-4 inline-block">
+   Review Course
+</a>
+</div>
+{% endblock%}
+{% block script %}
+<script>
+document.getElementById("add-section").onclick = function() {
+    let title = document.getElementById("section-title").value;
+    let order = document.getElementById("section-order").value;
+
+    fetch("{% url 'create_section' course.id %}", {
+        method: "POST",
+        headers: {"X-CSRFToken": "{{ csrf_token }}"},
+        body: new URLSearchParams({title: title, order: order})
+    }).then(res => res.json()).then(data => {
+        if(data.success) location.reload();
+        else alert(data.error);
+    });
+};
+
+document.querySelectorAll(".add-lecture").forEach(btn => {
+    btn.onclick = function() {
+        let sectionDiv = btn.closest("[data-section-id]");
+        let sectionId = sectionDiv.dataset.sectionId;
+        let is_preview = sectionDiv.querySelector("#lecture-preview").checked;
+
+
+
+        let title = sectionDiv.querySelector(".lecture-title").value;
+        let order = sectionDiv.querySelector(".lecture-order").value;
+        let description = sectionDiv.querySelector(".lecture-description").value;
+        let video = sectionDiv.querySelector(".lecture-video").files[0];
+        let resource = sectionDiv.querySelector(".lecture-file").files[0];
+
+        let formData = new FormData();
+        formData.append("title", title);
+        formData.append("order", order);
+        formData.append("is_previewable", is_preview);
+        formData.append("description", description);
+        if(video) formData.append("video", video);
+        if(resource) formData.append("resource_file", resource);
+
+        fetch(`/lectures/create/${sectionId}/`, {
+            method: "POST",
+            headers: {"X-CSRFToken": "{{ csrf_token }}"},
+            body: formData
+        }).then(res => res.json()).then(data => {
+            if(data.success) location.reload();
+            else alert(data.error);
+        });
+    };
+});
+
+document.querySelectorAll(".delete-section").forEach(btn => {
+    btn.onclick = function() {
+        let sectionId = btn.closest("[data-section-id]").dataset.sectionId;
+        fetch(`/sections/delete/${sectionId}/`, {
+            method: "POST",
+            headers: {"X-CSRFToken": "{{ csrf_token }}"},
+        }).then(res => res.json()).then(data => {
+            if(data.success) location.reload();
+        });
+    };
+});
+
+document.querySelectorAll(".delete-lecture").forEach(btn => {
+    btn.onclick = function() {
+        let lectureId = btn.dataset.lectureId;
+        fetch(`/lectures/delete/${lectureId}/`, {
+            method: "POST",
+            headers: {"X-CSRFToken": "{{ csrf_token }}"},
+        }).then(res => res.json()).then(data => {
+            if(data.success) location.reload();
+        });
+    };
+});
+</script>
+{% endblock %}

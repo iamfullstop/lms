@@ -1,0 +1,233 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+<title>Instructor Dashboard</title>
+{% endblock %}
+
+{% block content %}
+<div class="flex h-screen bg-gray-50">
+
+  <main class="flex-1 overflow-y-auto items-center p-6 ml-[18rem]">
+    <!-- Welcome Banner -->
+    <div class="bg-indigo-600 rounded-xl p-6 text-white mb-6 shadow-lg">
+      <div class="flex items-center  justify-between">
+        <div>
+          <h1 class="text-2xl font-bold">Welcome back, {{ request.user.full_name }} 👋</h1>
+          <p class="opacity-90">Here's what's happening with your courses today</p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="bg-white/20 p-2 rounded-full">
+            <i class="fas fa-bell text-xl"></i>
+          </div>
+          <div class="flex items-center space-x-2">
+            {% if request.user.profile_picture %}
+            <img src="{{ request.user.profile_picture.url }}" alt="Profile" class="w-10 h-10 rounded-full object-cover">
+            {% else %}
+            <div class="w-10 h-10 rounded-full bg-indigo-300 flex items-center justify-center">
+              <span class="text-white font-medium">{{ request.user.full_name|first|upper }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  gap-4 mb-8">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-sm font-medium">Total Courses</p>
+            <h3 class="text-2xl font-bold mt-1">{{ request.user.courses.count }}</h3>
+          </div>
+          <div class="p-3 rounded-lg bg-blue-50 text-blue-600">
+            <i class="fas fa-book-open text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-sm font-medium">Published Courses</p>
+            <h3 class="text-2xl font-bold mt-1">{{ published_count }}</h3>
+          </div>
+          <div class="p-3 rounded-lg bg-green-50 text-green-600">
+            <i class="fas fa-check-circle text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-sm font-medium">Draft Courses</p>
+            <h3 class="text-2xl font-bold mt-1">{{ draft_count }}</h3>
+          </div>
+          <div class="p-3 rounded-lg bg-yellow-50 text-yellow-600">
+            <i class="fas fa-edit text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-500 text-sm font-medium">Total Students</p>
+            <h3 class="text-2xl font-bold mt-1">0</h3>
+          </div>
+          <div class="p-3 rounded-lg bg-purple-50 text-purple-600">
+            <i class="fas fa-users text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 space-x-4 gap-6">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h2 class="text-lg font-semibold mb-4">Quick Actions</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <a href="{% url 'create_courses' %}"
+            class="p-4 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors text-center">
+            <div class="mx-auto w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-2">
+              <i class="fas fa-plus"></i>
+            </div>
+            <span class="text-sm font-medium">New Course</span>
+          </a>
+          <a href="{% url 'list_courses' %}"
+            class="p-4 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors text-center">
+            <div
+              class="mx-auto w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-2">
+              <i class="fas fa-book"></i>
+            </div>
+            <span class="text-sm font-medium">My Courses</span>
+          </a>
+          <a href="{% url 'profile' %}"
+            class="p-4 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors text-center">
+            <div
+              class="mx-auto w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 mb-2">
+              <i class="fas fa-user"></i>
+            </div>
+            <span class="text-sm font-medium">Profile</span>
+          </a>
+          <a href="{% url 'change_password' %}"
+            class="p-4 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors text-center">
+            <div class="mx-auto w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 mb-2">
+              <i class="fas fa-lock"></i>
+            </div>
+            <span class="text-sm font-medium">Security</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="bg-white p-1 rounded-xl shadow-sm border border-gray-100">
+        <!-- Recent Courses Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto mb-6">
+          <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+            <h2 class="text-lg font-semibold">Recent Courses</h2>
+            <a href="{% url 'list_courses' %}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View
+              All</a>
+          </div>
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thumbnail
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for course in request.user.courses.all|slice:":5" %}
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  {% if course.thumbnail_img %}
+                  <img class="h-10 w-10 rounded-md object-cover" src="{{ course.thumbnail_img.url }}"
+                    alt="{{ course.title }}">
+                  {% else %}
+                  <div class="h-10 w-10 bg-gray-200 rounded-md flex items-center justify-center">
+                    <i class="fas fa-book text-gray-400"></i>
+                  </div>
+                  {% endif %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="font-medium text-gray-900">{{ course.title }}</div>
+                  <div class="text-sm text-gray-500">{{ course.category }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  {% if course.is_published %}
+                  <span
+                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Published</span>
+                  {% else %}
+                  <span
+                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Draft</span>
+                  {% endif %}
+                </td>
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">Rs {{ course.price }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ course.updated_at|date:"M d, Y" }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <a href="{% url 'edit_courses' course.id %}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+                  <a href="{% url 'detail_courses' course.id %}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">No courses found. <a
+                    href="{% url 'create_courses' %}" class="text-blue-600 hover:underline">Create your first course</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Include Chart.js for potential future charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // You can add JavaScript for interactive elements here
+  document.addEventListener('DOMContentLoaded', function () {
+    // Example: Initialize a chart
+    const ctx = document.getElementById('performanceChart');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          datasets: [{
+            label: 'Course Performance',
+            data: [12, 19, 3, 5, 2, 3],
+            borderWidth: 2,
+            borderColor: '#4f46e5',
+            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

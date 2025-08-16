@@ -1,0 +1,368 @@
+{% extends "layout.html" %}
+
+{% block title %}
+<title>Create Course</title>
+{% endblock %}
+
+{% block content %}
+{% include "sidebar.html" %}
+
+<div class="main-content">
+    <div class="form-container">
+        <div class="form-card">
+            <h1 class="form-title">Edit Course: {{course.title}} </h1>
+
+        <form action="" method="POST" enctype="multipart/form-data" class="course-form">
+            {% csrf_token %}
+            <div class="form-grid">
+                <!-- Course Title -->
+                <div class="form-group">
+                    <label class="form-label">Course Title</label>
+                    <input type="text" name="title" placeholder="Enter course title"
+                           class="form-input" value="{{ course.title }}" required>
+                </div>
+
+                <!-- Price -->
+                <div class="form-group">
+                    <label class="form-label">Price (RS)</label>
+                    <input type="number" name="price" step="0.01" placeholder="0.00"
+                           class="form-input" value="{{ course.price }}" required>
+                </div>
+
+               <!-- Categories -->
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-select" required>
+                        <option value="">-- Select Category --</option>
+                        <option value="development" {% if course.category == 'development' %}selected{% endif %}>Development</option>
+                        <option value="business" {% if course.category == 'business' %}selected{% endif %}>Business</option>
+                        <option value="finance_accounting" {% if course.category == 'finance_accounting' %}selected{% endif %}>Finance &amp; Accounting</option>
+                        <option value="it_software" {% if course.category == 'it_software' %}selected{% endif %}>IT &amp; Software</option>
+                        <option value="office_productivity" {% if course.category == 'office_productivity' %}selected{% endif %}>Office Productivity</option>
+                        <option value="personal_development" {% if course.category == 'personal_development' %}selected{% endif %}>Personal Development</option>
+                        <option value="design" {% if course.category == 'design' %}selected{% endif %}>Design</option>
+                        <option value="marketing" {% if course.category == 'marketing' %}selected{% endif %}>Marketing</option>
+                        <option value="lifestyle" {% if course.category == 'lifestyle' %}selected{% endif %}>Lifestyle</option>
+                        <option value="photography_video" {% if course.category == 'photography_video' %}selected{% endif %}>Photography &amp; Video</option>
+                        <option value="health_fitness" {% if course.category == 'health_fitness' %}selected{% endif %}>Health &amp; Fitness</option>
+                        <option value="music" {% if course.category == 'music' %}selected{% endif %}>Music</option>
+                        <option value="teaching_academics" {% if course.category == 'teaching_academics' %}selected{% endif %}>Teaching &amp; Academics</option>
+                    </select>
+                </div>
+
+
+                <!-- Level -->
+                <div class="form-group">
+                    <label class="form-label">Level</label>
+                    <select name="level" class="form-select">
+                        <option value="beginner" {% if course.level == 'beginner' %}selected{% endif %}>Beginner</option>
+                        <option value="intermediate" {% if course.level == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                        <option value="advanced" {% if course.level == 'advanced' %}selected{% endif %}>Advanced</option>
+                    </select>
+                </div>
+
+                <!-- Thumbnail -->
+                <div class="form-group">
+
+                        <label class="form-label" for="thumbnail_img">Thumbnail Image</label>
+                        <input type="file" name="thumbnail_img" id="thumbnail_img" accept="image/*"
+                               class="form-input">
+
+                        <!-- Current Image Preview -->
+                        {% if course.thumbnail_img %}
+                        <div class="preview-container" style="display: block;">
+                            <p class="preview-label">Current Image:</p>
+                            <img src="{{ course.thumbnail_img.url }}" alt="Thumbnail" class="preview-image" />
+                        </div>
+                        {% endif %}
+                    
+
+                    <!-- Progress Bar -->
+                    <div id="progressContainer" class="progress-container">
+                        <p class="progress-label">Upload Progress:</p>
+                        <div class="progress-bar-bg">
+                            <div id="progressBar" class="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Publish & Certificate Options -->
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="is_published" class="checkbox-input" {% if course.is_published %}checked{% endif %}>
+                        <span class="checkbox-text">Publish Course</span>
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="offer_certificate" {% if course.offer_certificate %}checked{% endif %} class="checkbox-input">
+                        <span class="checkbox-text">Offer Certificate</span>
+                    </label>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group-wide">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" rows="4" placeholder="Write a detailed description..."
+                              class="form-textarea" required>{{ course.description }}</textarea>
+                </div>
+
+                <!-- Requirements -->
+                <div class="form-group-wide">
+                    <label class="form-label">Requirements</label>
+                    <textarea name="requirements" rows="3" placeholder="List course requirements..."
+                              class="form-textarea" required>{{ course.requirements }}</textarea>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="submit-container">
+                <button type="submit" class="submit-button">
+                    Edit Course
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block style %}
+<style>
+
+    .main-content {
+        margin-left: 260px;
+        padding: 2rem;
+    }
+
+    .form-container {
+        background-color: #f3f4f6;
+        min-height: calc(100vh - 4rem);
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .form-card {
+        background-color: white;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        border-radius: 0.75rem;
+        width: 100%;
+        max-width: 56rem;
+        padding: 2rem;
+    }
+
+
+    @media (max-width: 768px) {
+        .main-content {
+            margin-left: 0;
+            padding: 1rem;
+        }
+        
+        .form-container {
+            padding: 1rem;
+        }
+        
+        .form-card {
+            padding: 1.5rem;
+        }
+    }
+    .form-container {
+        background-color: #f3f4f6;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+    }
+
+    .form-card {
+        background-color: white;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        border-radius: 0.75rem;
+        width: 100%;
+        max-width: 56rem;
+        padding: 2rem;
+    }
+
+    .form-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #1f2937;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .course-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .form-group {
+        margin: 0 1rem;
+    }
+
+    .form-group-wide {
+        grid-column: span 2;
+        margin: 0 0.5rem;
+    }
+
+    .form-label {
+        display: block;
+        color: #374151;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        outline: none;
+    }
+
+    .form-input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+    }
+
+    .form-select {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        background-color: white;
+        outline: none;
+    }
+
+    .form-select:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+    }
+
+    .form-textarea {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        outline: none;
+        resize: vertical;
+    }
+
+    .form-textarea:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+    }
+
+    .checkbox-group {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+        margin: 0 1rem;
+        grid-column: span 2;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .checkbox-input {
+        width: 1.25rem;
+        height: 1.25rem;
+        color: #6366f1;
+        border: 1px solid #d1d5db;
+        border-radius: 0.25rem;
+    }
+
+    .checkbox-text {
+        color: #374151;
+    }
+
+    .preview-container {
+        margin-top: 1rem;
+        display: none;
+    }
+
+    .preview-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+    }
+
+    .preview-image {
+        width: 15rem;
+        height: 11rem;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        border: 1px solid #d1d5db;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .progress-container {
+        margin-top: 1rem;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        display: none;
+    }
+
+    .progress-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+    }
+
+    .progress-bar-bg {
+        width: 100%;
+        background-color: #e5e7eb;
+        border-radius: 9999px;
+        height: 0.625rem;
+    }
+
+    .progress-bar {
+        background-color: #6366f1;
+        height: 0.625rem;
+        border-radius: 9999px;
+        transition: all 0.3s ease-out;
+        width: 0%;
+    }
+
+    .submit-container {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .submit-button {
+        background-color: #6366f1;
+        color: white;
+        font-weight: 600;
+        padding: 0.5rem 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: background-color 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .submit-button:hover {
+        background-color: #4f46e5;
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group-wide {
+            grid-column: span 1;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+<title>Student Dashboard</title>
+{% endblock %}
+
+{% block content %}
+<div class="flex">
+  {% include "sidebar.html" %}
+  <main class="flex-1 p-6 overflow-auto">
+
+
+    <div class="max-w-md mx-auto bg-white p-6 shadow-md rounded-md">
+      <div class="text-center">
+        <h1 class="text-xl font-semibold mb-4">Welcome, {{ request.user.full_name }} 🧑‍🏫</h1>
+        <p>This is Student Dashboard content area.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+{% endblock %}

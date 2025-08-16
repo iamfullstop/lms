@@ -1,0 +1,158 @@
+{% extends "layout.html" %}
+
+{% block title %}
+<title>View Course</title>
+{% endblock %}
+
+{% block style %}
+<style>
+    .main-container {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .content-area {
+        flex: 1;
+        margin-left: 16rem;
+        padding: 2rem;
+    }
+
+    .course-container {
+        background-color: #4c51bf;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .course-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        color: white;
+    }
+    
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .course-card {
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .course-thumbnail {
+        width: 100%;
+        height: 10rem;
+        object-fit: cover;
+        border-radius: 0.375rem;
+        margin-bottom: 1rem;
+    }
+    
+    .course-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #2d3748;
+    }
+    
+    .course-price {
+        color: #2d3748;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+    
+    .course-level {
+        font-size: 0.875rem;
+        color: #4a5568;
+        margin-bottom: 1rem;
+    }
+    
+    .details-button {
+        display: inline-block;
+        background-color: #818cf8;
+        color: white;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .details-button:hover {
+        background-color: #6366f1;
+    }
+    
+    @media (max-width: 768px) {
+        .content-area {
+            margin-left: 0;
+            padding: 1rem;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .sidebar-toggle {
+            display: block;
+            position: fixed;
+            left: 1rem;
+            top: 1rem;
+            z-index: 1100;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    {% include "sidebar.html" %}
+    
+    <div class="content-area">
+        <div class="course-container">
+            <h1 class="course-title">All Course Details</h1>
+
+            {% if courses %}
+            <div class="courses-grid">
+                {% for course in courses %}
+                <div class="course-card">
+                    <img src="{{ course.thumbnail_img.url }}" 
+                         alt="{{ course.title }}" 
+                         class="course-thumbnail">
+                    
+                    <h5 class="course-name">{{ course.title }}</h5>
+                    <p class="course-price">Rs {{ course.price }}</p>
+                    <p class="course-level">Level: {{ course.level }}</p>
+                    
+                    <a href="{% url 'detail_courses' course.pk %}" 
+                       class="details-button">
+                       View details
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-courses">No courses found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

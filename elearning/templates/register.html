@@ -1,0 +1,59 @@
+{% extends 'layout.html' %} 
+
+{% block title %}
+<title>Register Page</title>
+{% endblock %} 
+
+{% block content %}
+
+<div class="max-w-md mx-auto mt-12 bg-white p-6 shadow-md rounded-md">
+  <h2 class="text-2xl font-bold mb-6 text-center">Register</h2>
+  {% if messages %} {% for message in messages %}
+  <p class="text-red-500">{{ message }}</p>
+  {% endfor %} {% endif %}
+  <form method="POST">
+    {% csrf_token %}
+    <label class="block mb-2">Full Name</label>
+    <input
+      name="fullname"
+      type="text"
+      class="w-full mb-4 border p-2 rounded"
+      required
+    />
+
+    <label class="block mb-2">Username</label>
+    <input
+      name="username"
+      type="text"
+      class="w-full mb-4 border p-2 rounded"
+      required
+    />
+
+    <label class="block mb-2">Email</label>
+    <input
+      name="email"
+      type="email"
+      class="w-full mb-4 border p-2 rounded"
+      required
+    />
+
+    <label class="block mb-2">Password</label>
+    <input
+      name="password"
+      type="password"
+      class="w-full mb-4 border p-2 rounded"
+      required
+    />
+
+    <label class="block mb-2">Role</label>
+    <select name="role" class="w-full mb-4 border p-2 rounded" required>
+      <option value="student">Student</option>
+      <option value="instructor">Instructor</option>
+    </select>
+
+    <button type="submit" class="w-full hover:font-bold bg-blue-800 text-white p-2 rounded hover:bg-blue-400 hover:text-black">
+      Register
+    </button>
+  </form>
+</div>
+{% endblock %}

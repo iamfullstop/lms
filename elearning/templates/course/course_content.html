@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block title %}<title>Course Content</title>{% endblock %}
+
+{% block content %}
+<div class="flex">
+    <main class="flex-1 p-6 overflow-auto">
+        <div class="w-3/4 mx-auto bg-white p-6 shadow-md rounded-md">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-semibold">Manage Course Curriculum: {{ course.title }}</h1>
+            </div>
+
+            <!-- Summary -->
+            <div class="mb-4">
+                <h2 class="text-lg font-bold">Course content</h2>
+                <p class="text-gray-600">
+                    {{ sections.count }} sections • 
+                    {% with 0 as total %}
+                        {% for section in sections %}
+                            {% with total=total|add:section.lectures.count %}
+                            {% endwith %}
+                        {% endfor %}
+                        {{ total }} lectures
+                    {% endwith %}
+                </p>
+            </div>
+
+            <!-- Expand all -->
+            <button id="expand-all" class="text-purple-600 mb-4 font-semibold">Expand all sections</button>
+
+            <!-- Sections -->
+            <div id="sections-wrapper">
+                {% for section in sections %}
+                <div class="border rounded mb-2">
+                    <button class="section-toggle w-full flex justify-between items-center py-3 px-4 font-semibold bg-gray-50">
+                        <span>{{ section.title }}</span>
+                        <span class="text-gray-500">{{ section.lectures.count }} lectures</span>
+                    </button>
+                    <div class="section-content hidden  pl-4 pb-3">
+                        {% for lecture in section.lectures.all %}
+                        <div class="flex justify-between items-center py-2 border-b last:border-none">
+                            <div class="flex items-center justify-between ml-1">
+                                {% if lecture.video %} 🎥 {% else %} 📄 {% endif %}
+                                <p class="ml-2">{{ lecture.title }}</p>
+                                <p class="align-right">video playery link</p>
+                                <p class="ml-2">Duration</p>
+
+                    
+                                {% comment %} Duration {% endcomment %}
+                                {% if lecture.is_previewable %}
+                                    <span class="text-black   ml-3 italic">Preview</span>
+                                {% endif %}
+                            </div>
+                            <div class="text-gray-500 text-sm mx-2">
+                                {{ lecture.resource_file|yesno:"File,  " }}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-sm text-gray-500 p-3">No lectures yet</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-sm text-gray-500">No sections yet</p>
+                <a class="m-4 p-2 hover:bg-red-400 text-yellow rounded-xl border mt-"4 href="{% url 'create_section' course.pk %}">Create Section</a>
+
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".section-toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+            btn.nextElementSibling.classList.toggle("hidden");
+        });
+    });
+
+    document.getElementById("expand-all").addEventListener("click", () => {
+        document.querySelectorAll(".section-content").forEach(div => {
+            div.classList.remove("hidden");
+        });
+    });
+});
+</script>
+{% endblock %}

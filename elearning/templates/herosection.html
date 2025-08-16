@@ -1,0 +1,182 @@
+<div class="text-white" style="background: #14122b">
+  <section class="relative overflow-hidden">
+    <div
+      class="max-w-7xl mx-auto px-6 py-24 lg:py-32 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+    >
+      <!-- Hero Text -->
+      <div class="space-y-6 fade-up delay-200">
+        <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
+          Learn Anything, <span class="gradient-text">Anywhere</span>, Anytime.
+        </h1>
+        <p class="text-lg text-white max-w-xl fade-up delay-400">
+          Boost your skills and career with certified courses taught by top
+          instructors. Discover your passion and learn at your own pace.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 fade-up delay-600">
+          <a
+            href=""
+            class="px-6 py-3 bg-indigo-600 text-white rounded-xl text-base font-medium hover:bg-indigo-700 transition-all duration-300 shadow-md"
+          >
+            Explore Courses
+          </a>
+          <a
+            href="{% url 'register' %}"
+            class="px-6 py-3 border border-gray-300 rounded-xl text-base font-medium hover:border-indigo-600 hover:text-white hover:bg-green-800 transition-all duration-300"
+          >
+            Join for Free
+          </a>
+        </div>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="relative fade-up delay-400">
+        <img
+          src="https://plus.unsplash.com/premium_photo-1681487729805-91f220c7da25?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZSUyMGxlYXJuaW5nfGVufDB8MHwwfHx8MA%3D%3D"
+          alt="Online Learning"
+          class="w-full rounded-lg max-w-md mx-auto md:max-w-sm lg:max-w-md"
+        />
+        <!-- Decorative blobs -->
+        <div
+          class="absolute -top-10 -left-10 w-20 h-20 bg-indigo-100 rounded-full blur-2xl opacity-50 z-[-1]"
+        ></div>
+        <div
+          class="absolute -bottom-10 -right-10 w-20 h-20 bg-sky-100 rounded-full blur-2xl opacity-50 z-[-1]"
+        ></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Features/Courses Section -->
+<main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-6 py-4">
+  <section class="py-4">
+    <h2 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-8">
+      Popular Programs & Skills
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Feature Card 1 -->
+      <div
+        class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+      >
+        <div class="text-blue-600 text-4xl mb-4 text-center">
+          <i class="fas fa-laptop-code"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">
+          IT & Software
+        </h3>
+        <p class="text-gray-600 text-center">
+          Master data analysis, machine learning, and AI with expert-led
+          courses.
+        </p>
+        <a
+          href="#"
+          class="block text-blue-600 hover:text-blue-800 mt-4 text-center font-medium"
+          >Learn More <i class="fas fa-arrow-right ml-1 text-sm"></i
+        ></a>
+      </div>
+
+      <!-- Feature Card 2 -->
+      <div
+        class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+      >
+        <div class="text-green-600 text-4xl mb-4 text-center">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">
+          Business & Finance
+        </h3>
+        <p class="text-gray-600 text-center">
+          Develop essential business acumen and financial literacy for career
+          growth.
+        </p>
+        <a
+          href="#"
+          class="block text-green-600 hover:text-green-800 mt-4 text-center font-medium"
+          >Learn More <i class="fas fa-arrow-right ml-1 text-sm"></i
+        ></a>
+      </div>
+
+      <!-- Feature Card 3 -->
+      <div
+        class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+      >
+        <div class="text-purple-600 text-4xl mb-4 text-center">
+          <i class="fas fa-palette"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">
+          Design
+        </h3>
+        <p class="text-gray-600 text-center">
+          Explore creativity, history, and culture with engaging online
+          programs.
+        </p>
+        <a
+          href="#"
+          class="block text-purple-600 hover:text-purple-800 mt-4 text-center font-medium"
+          >Learn More <i class="fas fa-arrow-right ml-1 text-sm"></i
+        ></a>
+      </div>
+
+      <!-- Feature Card 4 -->
+      <div
+        class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+      >
+        <div class="text-orange-600 text-4xl mb-4 text-center">
+          <i class="fas fa-microscope"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">
+          Health
+        </h3>
+        <p class="text-gray-600 text-center">
+          Advance your knowledge in biology, medicine, and public health.
+        </p>
+        <a
+          href="#"
+          class="block text-orange-600 hover:text-orange-800 mt-4 text-center font-medium"
+          >Learn More <i class="fas fa-arrow-right ml-1 text-sm"></i
+        ></a>
+      </div>
+
+      <!-- Feature Card 5 -->
+      <div
+        class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+      >
+        <div class="text-red-600 text-4xl mb-4 text-center">
+          <i class="fas fa-music"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">
+         Music
+        </h3>
+        <p class="text-gray-600 text-center">
+          Dive into the world of AI, machine learning, and deep learning
+          applications.
+        </p>
+        <a
+          href="#"
+          class="block text-red-600 hover:text-red-800 mt-4 text-center font-medium"
+          >Learn More <i class="fas fa-arrow-right ml-1 text-sm"></i
+        ></a>
+      </div>
+
+      <!-- Feature Card 6 -->
+      <div
+        class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+      >
+        <div class="text-teal-600 text-4xl mb-4 text-center">
+          <i class="fas fa-book"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-3 text-center">
+          Teaching & Academics
+        </h3>
+        <p class="text-gray-600 text-center">
+          Build foundational programming skills and explore advanced algorithms.
+        </p>
+        <a
+          href="#"
+          class="block text-teal-600 hover:text-teal-800 mt-4 text-center font-medium"
+          >Learn More <i class="fas fa-arrow-right ml-1 text-sm"></i
+        ></a>
+      </div>
+    </div>
+  </section>
+</main>
