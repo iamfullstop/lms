@@ -1,10 +1,10 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from ..models import Course, Section
-import hmac, hashlib, base64
+from ..models import Course, Section, Enrollment
+import hmac, hashlib, base64, json
 from django.utils import timezone
-import json
+
 
 def published_courses(request):
     published_courses = Course.objects.filter(is_published=True).order_by("-created_at")
@@ -19,18 +19,23 @@ def view_course(request, course_id):
     # calculate total lectures
     total_lectures = sum(section.lectures.count() for section in sections)
 
+    # Check if user purchased/enrolled
+    purchased = False
+    if request.user.is_authenticated:
+        purchased = Enrollment.objects.filter(user=request.user, course=course).exists()
+
     return render(
         request,
         "course/viewcourse.html",
-        {"course": course, "sections": sections, "total_lectures": total_lectures},
+        {
+            "course": course,
+            "sections": sections,
+            "total_lectures": total_lectures,
+            "purchased": purchased,
+        },
     )
 
 
-import hmac, hashlib, base64, json
-from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-from ..models import Course
 
 @login_required
 def process_payment(request, course_id):
@@ -80,11 +85,13 @@ def payment_success(request, course_id):
         except Exception as e:
             esewa_data = {"error": str(e)}
 
+    # Enroll the user if payment successful
+    Enrollment.objects.get_or_create(user=request.user, course=course)
+
     return render(request, 'payment/success.html', {
         'course': course,
         'esewa_data': esewa_data
     })
-
 
 @login_required
 def payment_failure(request, course_id):

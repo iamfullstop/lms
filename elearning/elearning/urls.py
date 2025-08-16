@@ -17,16 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
-from django.conf.urls.static import static
 from . import views
+from django.conf.urls.static import static
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='home'),
 
     path('', include('app.urls')),  
-
     path("__reload__/", include("django_browser_reload.urls")),
+    path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'images/favicon.ico', permanent=True)),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

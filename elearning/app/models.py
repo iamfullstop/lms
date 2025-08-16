@@ -101,3 +101,14 @@ class Lecture(models.Model):
 
     def __str__(self):
         return f"Section {self.section.order} • Lecture {self.order}: {self.title}"
+    
+class Enrollment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrollments')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
+    purchased_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'course')  # avoid duplicate enrollments
+
+    def __str__(self):
+        return f"{self.user.email} enrolled in {self.course.title}"
