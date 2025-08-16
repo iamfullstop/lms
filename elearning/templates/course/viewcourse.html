@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+{% block title %}<title>{{ course.title }} | Course Details</title>{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto p-6">
+    <!-- Course Header -->
+    <div class="flex justify-center items-center lg:grid-cols-3 gap-2 bg-white p-6 ml-6 rounded-xl shadow-md">
+        <!-- Left: Course Info -->
+        <div class="lg:col-span-2">
+            <h1 class="text-3xl font-bold mb-2">{{ course.title }}</h1>
+            <p class="text-gray-600">{{ course.get_category_display }} • {{ course.get_level_display }}</p>
+            <p class="mt-4 text-gray-700 leading-relaxed">{{ course.description }}</p>
+            
+            <div class="mt-4 space-y-1 text-sm text-gray-500">
+                <p><span class="font-semibold">Requirements:</span> {{ course.requirements }}</p>
+                <p><span class="font-semibold">Instructor:</span> {{ course.instructor.full_name }}</p>
+            </div>
+        </div>
+
+        <!-- Right: Thumbnail + Purchase Box -->
+        <div class="w-full flex flex-col items-center justify-start bg-gray-50 p-6 rounded-lg shadow">
+            {% if course.thumbnail_img %}
+                <img src="{{ course.thumbnail_img.url }}" alt="{{ course.title }}" class="rounded-xl  object-cover">
+            {% else %}
+                <img src="https://via.placeholder.com/400x250" class="rounded-xl w-full h-48 object-cover">
+            {% endif %}
+            
+            <p class="text-2xl font-bold text-indigo-600 mt-4">Rs. {{ course.price }}</p>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'process_payment' course.id %}" 
+                   class="mt-4 w-full text-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                   Proceed to Payment
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" 
+                   class="mt-4 w-full text-center bg-blue-400 border text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-500 transition">
+                   Login to Purchase
+                </a>
+            {% endif %}
+        </div>
+    </div>
+<!-- course  lecture -->
+   <div class="mt-10 bg-white p-6 rounded-xl shadow">
+    <h2 class="text-2xl font-semibold mb-4">📚 Course Content</h2>
+    <p class="text-gray-600 mb-6">
+        {{ sections.count }} sections • {{ total_lectures }} lectures
+    </p>
+
+   {% for section in sections %}
+<div class="border rounded-lg mb-3">
+    <!-- Section Toggle -->
+    <button class="section-toggle w-full flex justify-between items-center py-3 px-4 font-semibold bg-gray-50 hover:bg-gray-100">
+        <span>{{ section.title }}</span>
+        <span class="text-gray-500">{{ section.lectures.count }} lectures</span>
+    </button>
+
+    <div class="section-content hidden pl-4 pb-3">
+        {% for lecture in section.lectures.all %}
+        <div class="py-3 border-b last:border-none">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    {% if lecture.video %} 🎥 {% else %} 📄 {% endif %}
+                    <p class="ml-2">{{ lecture.title }}</p>
+                    {% if lecture.is_previewable %}
+                        <span class="text-green-600 ml-3 italic">Preview</span>
+                    {% endif %}
+                </div>
+
+                <!-- Preview Toggle Button -->
+                {% if lecture.is_previewable and lecture.video %}
+                <button class="preview-toggle text-sm text-indigo-600 hover:underline m-2">
+                    ▶ View
+                </button>
+                {% endif %}
+            </div>
+
+            <!-- Collapsible Preview Video -->
+            {% if lecture.is_previewable and lecture.video %}
+            <div class="preview-content hidden mt-2">
+                <video controls class="w-full rounded-lg">
+                    <source src="{{ lecture.video.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="text-sm text-gray-500 p-3">No lectures yet</p>
+        {% endfor %}
+    </div>
+</div>
+{% empty %}
+<p class="text-sm text-gray-500">No sections yet</p>
+{% endfor %}
+
+</div>
+
+<!-- Expand/Collapse Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Section expand/collapse
+    document.querySelectorAll(".section-toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+            btn.nextElementSibling.classList.toggle("hidden");
+        });
+    });
+
+    // Lecture preview expand/collapse
+    document.querySelectorAll(".preview-toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const previewContent = btn.closest("div").nextElementSibling;
+            previewContent.classList.toggle("hidden");
+
+            // toggle button text ▶ / ▼
+            btn.textContent = previewContent.classList.contains("hidden") ? "▶ View" : "▼ Hide";
+        });
+    });
+});
+</script>
+
+{% endblock %}

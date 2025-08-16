@@ -11,6 +11,25 @@ def published_courses(request):
     return render(request, 'course/published_courses.html', context)
 
 
+def view_course(request, course_id):
+    course = get_object_or_404(Course, id=course_id, is_published=True)
+    sections = Section.objects.filter(course=course).prefetch_related("lectures")
+
+    # calculate total lectures
+    total_lectures = sum(section.lectures.count() for section in sections)
+
+    return render(request, "course/viewcourse.html", {
+        "course": course,
+        "sections": sections,
+        "total_lectures": total_lectures
+    })
+
+@login_required
+def process_payment(request, course_id):
+    # dummy payment handler (you can integrate Razorpay/Stripe later)
+    course = get_object_or_404(Course, id=course_id, is_published=True)
+    return render(request, "payment.html", {"course": course})
+
 @login_required
 def course_create(request):
     if not hasattr(request.user, 'role') or request.user.role != 'instructor':

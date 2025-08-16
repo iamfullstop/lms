@@ -31,28 +31,47 @@
             <div id="sections-wrapper">
                 {% for section in sections %}
                 <div class="border rounded mb-2">
+                    <!-- Section Toggle -->
                     <button class="section-toggle w-full flex justify-between items-center py-3 px-4 font-semibold bg-gray-50">
                         <span>{{ section.title }}</span>
                         <span class="text-gray-500">{{ section.lectures.count }} lectures</span>
                     </button>
-                    <div class="section-content hidden  pl-4 pb-3">
-                        {% for lecture in section.lectures.all %}
-                        <div class="flex justify-between items-center py-2 border-b last:border-none">
-                            <div class="flex items-center justify-between ml-1">
-                                {% if lecture.video %} 🎥 {% else %} 📄 {% endif %}
-                                <p class="ml-2">{{ lecture.title }}</p>
-                                <p class="align-right">video playery link</p>
-                                <p class="ml-2">Duration</p>
 
-                    
-                                {% comment %} Duration {% endcomment %}
-                                {% if lecture.is_previewable %}
-                                    <span class="text-black   ml-3 italic">Preview</span>
-                                {% endif %}
+                    <div class="section-content hidden pl-4 pb-3">
+                        {% for lecture in section.lectures.all %}
+                        <div class="py-3 border-b last:border-none">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    {% if lecture.video %} 🎥 {% else %} 📄 {% endif %}
+                                    <p class="ml-2">{{ lecture.title }}</p>
+                                    <p class="ml-4 text-sm text-gray-500">Duration</p>
+                                    
+                                    {% if lecture.is_previewable %}
+                                        <span class="text-green-600 m-2 italic">Preview</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="flex items-center gap-3 text-sm text-gray-500">
+                                    {{ lecture.resource_file|yesno:"File,  " }}
+
+                                    <!-- Preview Toggle Button -->
+                                    {% if lecture.is_previewable and lecture.video %}
+                                    <button class="preview-toggle text-indigo-600 m-2 hover:underline">
+                                        ▶ View
+                                    </button>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <div class="text-gray-500 text-sm mx-2">
-                                {{ lecture.resource_file|yesno:"File,  " }}
+
+                            <!-- Collapsible Preview Video -->
+                            {% if lecture.is_previewable and lecture.video %}
+                            <div class="preview-content hidden mt-2">
+                                <video controls class="w-full rounded-lg">
+                                    <source src="{{ lecture.video.url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
                             </div>
+                            {% endif %}
                         </div>
                         {% empty %}
                         <p class="text-sm text-gray-500 p-3">No lectures yet</p>
@@ -61,8 +80,9 @@
                 </div>
                 {% empty %}
                 <p class="text-sm text-gray-500">No sections yet</p>
-                <a class="m-4 p-2 hover:bg-red-400 text-yellow rounded-xl border mt-"4 href="{% url 'create_section' course.pk %}">Create Section</a>
-
+                <a class="m-4 p-2 hover:bg-red-400 text-yellow rounded-xl border" href="{% url 'create_section' course.pk %}">
+                    Create Section
+                </a>
                 {% endfor %}
             </div>
         </div>
@@ -71,15 +91,26 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+    // Section expand/collapse
     document.querySelectorAll(".section-toggle").forEach(btn => {
         btn.addEventListener("click", () => {
             btn.nextElementSibling.classList.toggle("hidden");
         });
     });
 
+    // Expand all sections
     document.getElementById("expand-all").addEventListener("click", () => {
         document.querySelectorAll(".section-content").forEach(div => {
             div.classList.remove("hidden");
+        });
+    });
+
+    // Lecture preview expand/collapse
+    document.querySelectorAll(".preview-toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const previewContent = btn.closest("div").parentElement.querySelector(".preview-content");
+            previewContent.classList.toggle("hidden");
+            btn.textContent = previewContent.classList.contains("hidden") ? "▶ View" : "▼ Hide";
         });
     });
 });
