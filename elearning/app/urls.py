@@ -37,9 +37,11 @@ urlpatterns = [
 
     # Payment
     path('course/<int:course_id>/payment/', views.process_payment, name="process_payment"),
-
-
-
+    path('course/<int:course_id>/payment/success/', views.payment_success, name='payment_success'),
+    path('course/<int:course_id>/payment/failure/', views.payment_failure, name='payment_failure'),
 ]
+
+
+
 
 

@@ -1,11 +1,30 @@
-{% extends 'layout.html' %}
-
-{% block title %}
-<title>Process Payment</title>
-    
-{% endblock %}
+{% extends "layout.html" %}
+{% block title %}<title>Payment - {{ course.title }}</title>{% endblock %}
 
 {% block content %}
-<h1 class="text-xl text-center">Payment Process </h1>
-    
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 px-4">
+  <div class="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-8 text-center">
+    <h1 class="text-3xl font-bold text-blue-800 mb-4">{{ course.title }}</h1>
+    <p class="text-lg text-blue-700 mb-4">Price: NPR {{ course.price }}</p>
+
+    <form action="https://rc-epay.esewa.com.np/api/epay/main/v2/form" method="POST" class="flex flex-col items-center space-y-4">
+      <input type="hidden" name="amount" value="{{ course.price }}">
+      <input type="hidden" name="tax_amount" value="0">
+      <input type="hidden" name="total_amount" value="{{ course.price }}">
+      <input type="hidden" name="transaction_uuid" value="{{ transaction_uuid }}">
+      <input type="hidden" name="product_code" value="EPAYTEST">
+      <input type="hidden" name="product_service_charge" value="0">
+      <input type="hidden" name="product_delivery_charge" value="0">
+      <input type="hidden" name="success_url" value="{{ success_url }}">
+      <input type="hidden" name="failure_url" value="{{ failure_url }}">
+      <input type="hidden" name="signed_field_names" value="total_amount,transaction_uuid,product_code">
+      <input type="hidden" name="signature" value="{{ esewa_signature }}">
+
+      <button type="submit" class="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition-all">
+        <img src="https://cdn.esewa.com.np/ui/images/esewa_og.png" alt="eSewa" class="w-8 h-8 mr-3">
+        Pay with eSewa
+      </button>
+    </form>
+  </div>
+</div>
 {% endblock %}
