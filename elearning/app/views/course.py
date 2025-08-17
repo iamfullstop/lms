@@ -4,6 +4,57 @@ from django.contrib.auth.decorators import login_required
 from ..models import Course, Section, Enrollment,Certificate
 import hmac, hashlib, base64, json
 from django.utils import timezone
+from django.http import JsonResponse
+from django.db.models import Q
+
+
+def search_course(request):
+    query = request.GET.get("q", "").strip()
+    category = request.GET.get("category", "")
+    level = request.GET.get("level", "")
+    instructor = request.GET.get("instructor", "")
+    price_min = request.GET.get("price_min")
+    price_max = request.GET.get("price_max")
+    published = request.GET.get("published", "")
+
+    courses = Course.objects.all()
+
+    if query:
+        courses = courses.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(instructor__username__icontains=query)
+        )
+
+    if category:
+        courses = courses.filter(category=category)
+    if level:
+        courses = courses.filter(level=level)
+    if instructor:
+        courses = courses.filter(instructor__username__icontains=instructor)
+    if price_min:
+        courses = courses.filter(price__gte=price_min)
+    if price_max:
+        courses = courses.filter(price__lte=price_max)
+    if published:
+        if published == "yes":
+            courses = courses.filter(is_published=True)
+        elif published == "no":
+            courses = courses.filter(is_published=False)
+
+    context = {
+        "courses": courses,
+        "query": query,
+        "category": category,
+        "level": level,
+        "instructor": instructor,
+        "price_min": price_min,
+        "price_max": price_max,
+        "published": published,
+    }
+
+    return render(request, "course/search_course.html", context)
+
 
 @login_required
 def enrolled_courses(request):

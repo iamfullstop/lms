@@ -21,7 +21,7 @@ urlpatterns = [
     path('course/delete/<int:course_id>', views.course_delete, name="delete_courses"),
     path('viewcourse/<int:course_id>/', views.view_course, name="view_course"),
 
-
+    path("search/", views.search_course, name="search_course"),
     path("course/<int:course_id>/content/", views.course_content, name="course_content"),
 
     # Section CRUD [course --> section]

@@ -1,75 +1,295 @@
-<nav class="bg-white text-black shadow-md z-50">
-  <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-    
-    <!-- Left: Logo & Mobile Toggle -->
-    <div class="flex items-center space-x-4">
-      <a href="{% url 'home' %}" class="text-2xl font-bold text-blue-600">ShikyalayaGyan</a>
-      <button id="mobile-toggle" class="md:hidden p-2 text-white hover:text-white focus:outline-none">
-        <i class="fas fa-bars"></i>
-      </button>
-    </div>
+<style>
 
-    <!-- Middle: Search -->
-    <div class="hidden md:flex flex-1 max-w-md mx-6 relative">
-      <input type="text" placeholder="Search courses..."
-             class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:border-blue-500 focus:ring-0 shadow-sm">
-      <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+.navbar {
+    font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 1000;
+}
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo */
+.navbar-logo a {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1D4ED8;
+  text-decoration: none;
+}
+
+/* Hamburger */
+.navbar-toggle {
+  display: none;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Nav links */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.navbar-links a {
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: #1f2937;
+  transition: background 0.3s;
+}
+.navbar-links a:hover {
+  background: #f3f4f6;
+}
+
+/* User button */
+.user-btn {
+  width: 40px;
+  height: 40px;
+  background: #1D4ED8;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Dropdown menu */
+.user-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 200px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+.user-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.user-menu a {
+  display: block;
+  padding: 10px 15px;
+  color: #1f2937;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.user-menu a:hover {
+  background: #f3f4f6;
+}
+
+/* Mobile menu */
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 20px;
+  border-top: 1px solid #ddd;
+}
+.mobile-menu.show {
+  display: flex;
+}
+
+/* Search */
+.navbar-search {
+  position: relative;
+}
+.navbar-search input {
+  padding: 8px 12px 8px 35px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  outline: none;
+  width: 200px;
+  transition: width 0.3s;
+}
+.navbar-search input:focus {
+  width: 300px;
+  border-color: #1D4ED8;
+}
+.navbar-search i {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+/* Search results dropdown */
+.search-results {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  max-height: 250px;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+.search-results.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.search-results a {
+  display: flex;
+  gap: 10px;
+  padding: 8px 10px;
+  text-decoration: none;
+  color: #1f2937;
+}
+.search-results a:hover {
+  background: #f3f4f6;
+}
+.search-results img {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+/* Responsive */
+@media(max-width: 768px){
+  .navbar-toggle {
+    display: block;
+  }
+  .navbar-links {
+    display: none;
+  }
+  .navbar-links.mobile-show {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    padding: 10px 20px;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+}
+</style>
+
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-logo">
+      <a href="{% url 'home' %}">ShikyalayaGyan</a>
+    </div>
+    <button class="navbar-toggle" id="mobile-toggle">
+      &#9776;
+    </button>
+
+    <div class="navbar-search">
+      <form id="search-form" action="{% url 'search_course' %}" method="get">
+        <input type="text" id="search-input" placeholder="Search courses..." autocomplete="off">
         <i class="fas fa-search"></i>
-      </div>
+      </form>
+      <div id="search-results" class="search-results"></div>
     </div>
 
-    <!-- Right: Links/User Menu -->
-    <div class="hidden md:flex items-center space-x-4">
+    <div class="navbar-links" id="navbar-links">
       {% if request.user.is_authenticated %}
-        <div class="relative">
-          <button id="user-btn" class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-            {{ request.user.username|first|upper }}
-          </button>
-          <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2">
-            {% if request.user.role == 'instructor' %}
-              <a href="{% url 'instructor_dashboard' %}" class="block px-4 py-2 hover:bg-gray-100">Dashboard</a>
-              <a href="{% url 'create_courses' %}" class="block px-4 py-2 hover:bg-gray-100">Add Course</a>
-              <a href="{% url 'profile' %}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
-
-              <a href="{% url 'list_courses' %}" class="block px-4 py-2 hover:bg-gray-100">My Courses</a>
-            {% elif request.user.role == 'student' %}
-              <a href="{% url 'student_dashboard' %}" class="block px-4 py-2 hover:bg-gray-100">Dashboard</a>
-              <a href="{% url 'enrolled_courses' %}" class="block px-4 py-2 hover:bg-gray-100">Enrolled Courses</a>
-            {% endif %}
-            <a href="{% url 'change_password' %}" class="block px-4 py-2 hover:bg-gray-100">Change Password</a>
-            <a href="{% url 'profile' %}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
-            <a href="{% url 'logout' %}" class="block px-4 py-2 text-red-600 hover:bg-red-50">Logout</a>
-          </div>
-        </div>
+      <div class="user-btn" id="user-btn">{{ request.user.username|first|upper }}</div>
+      <div class="user-menu" id="user-menu">
+        {% if request.user.role == 'instructor' %}
+          <a href="{% url 'instructor_dashboard' %}">Dashboard</a>
+          <a href="{% url 'create_courses' %}">Add Course</a>
+          <a href="{% url 'list_courses' %}">My Courses</a>
+        {% elif request.user.role == 'student' %}
+          <a href="{% url 'student_dashboard' %}">Dashboard</a>
+          <a href="{% url 'enrolled_courses' %}">Enrolled Courses</a>
+        {% endif %}
+        <a href="{% url 'profile' %}">Profile</a>
+        <a href="{% url 'change_password' %}">Change Password</a>
+        <a href="{% url 'logout' %}" style="color:red;">Logout</a>
+      </div>
       {% else %}
-        <a href="{% url 'login' %}" class="px-4 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50">Log In</a>
-        <a href="{% url 'register' %}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Join Free</a>
+      <a href="{% url 'login' %}">Log In</a>
+      <a href="{% url 'register' %}" style="background:#1D4ED8;color:#fff;">Join Free</a>
       {% endif %}
     </div>
-  </div>
-
-  <!-- Mobile Menu -->
-  <div id="mobile-menu" class="hidden md:hidden px-4 pb-4 space-y-2 border-t border-gray-200">
-    {% if request.user.is_authenticated %}
-      <a href="{% url 'instructor_dashboard' %}" class="block py-2 hover:bg-gray-100">Dashboard</a>
-      <a href="{% url 'list_courses' %}" class="block py-2 hover:bg-gray-100">My Courses</a>
-      <a href="{% url 'create_courses' %}" class="block py-2 hover:bg-gray-100">Add Course</a>
-      <a href="{% url 'logout' %}" class="block py-2 text-red-600 hover:bg-red-50">Logout</a>
-      <a href="{% url 'profile' %}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
-
-    {% else %}
-      <a href="{% url 'login' %}" class="block py-2 text-blue-600 hover:bg-gray-100">Log In</a>
-      <a href="{% url 'register' %}" class="block py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Join Free</a>
-    {% endif %}
   </div>
 </nav>
 
 <script>
-  document.getElementById('mobile-toggle').addEventListener('click', () => {
-    document.getElementById('mobile-menu').classList.toggle('hidden');
+  // User dropdown toggle
+  const userBtn = document.getElementById("user-btn");
+  const userMenu = document.getElementById("user-menu");
+  userBtn?.addEventListener("click", () => {
+    userMenu.classList.toggle("show");
+  });
+  document.addEventListener("click", (e) => {
+    if (!userMenu.contains(e.target) && e.target !== userBtn) userMenu.classList.remove("show");
   });
 
-  document.getElementById('user-btn')?.addEventListener('click', () => {
-    document.getElementById('user-menu').classList.toggle('hidden');
+  // Mobile menu toggle
+  const mobileToggle = document.getElementById("mobile-toggle");
+  const navbarLinks = document.getElementById("navbar-links");
+  mobileToggle.addEventListener("click", () => {
+    navbarLinks.classList.toggle("mobile-show");
+  });
+
+  // Search results (simplified)
+  const searchInput = document.getElementById("search-input");
+  const resultsBox = document.getElementById("search-results");
+  const searchForm = document.getElementById("search-form");
+  const searchUrl = "{% url 'search_course' %}";
+
+  searchInput?.addEventListener("input", async function () {
+    const query = this.value.trim();
+    if (query.length < 2) {
+      resultsBox.classList.remove("show");
+      return;
+    }
+    try {
+      const response = await fetch(`${searchUrl}?q=${encodeURIComponent(query)}`, { headers: { "X-Requested-With": "XMLHttpRequest" }});
+      const results = await response.json();
+      if(results.length>0){
+        resultsBox.innerHTML = results.map(course => `
+          <a href="/courses/${course.id}/">
+            <img src="${course.thumbnail}">
+            <div>
+              <p>${course.title}</p>
+            </div>
+          </a>
+        `).join('');
+        resultsBox.classList.add("show");
+      } else {
+        resultsBox.innerHTML = '';
+        resultsBox.classList.remove("show");
+      }
+    } catch(err){ console.error(err); }
+  });
+  document.addEventListener("click", (e) => {
+    if (!resultsBox.contains(e.target) && e.target !== searchInput) resultsBox.classList.remove("show");
   });
 </script>
