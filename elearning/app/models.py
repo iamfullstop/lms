@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+import uuid
 # Create your models here.
 
 class User(AbstractUser):
@@ -112,3 +112,62 @@ class Enrollment(models.Model):
 
     def __str__(self):
         return f"{self.user.email} enrolled in {self.course.title}"
+
+
+class Review(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="reviews")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
+    rating = models.PositiveIntegerField(default=1)  # 1 to 5 stars
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("course", "user")  # one review per course per student
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.full_name} - {self.course.title} ({self.rating}★)"
+
+    @staticmethod
+    def course_rating_summary(course_id):
+        from django.db.models import Avg, Count
+        return Review.objects.filter(course_id=course_id).aggregate(
+            avg_rating=Avg("rating"),
+            total_reviews=Count("id")
+        )
+
+
+class Certificate(models.Model):
+    # Link to the enrollment (one-to-one: one enrollment → one certificate)
+    enrollment = models.OneToOneField(
+        "Enrollment", 
+        on_delete=models.CASCADE, 
+        related_name="certificate"
+    )
+
+    # Unique certificate identifier
+    certificate_id = models.CharField(
+        max_length=50, 
+        unique=True, 
+        default=uuid.uuid4, 
+        editable=False
+    )
+
+    # When it was issued
+    issued_at = models.DateTimeField(auto_now_add=True)
+
+    # Optional: allow re-download (PDF path or saved file)
+    pdf_file = models.FileField(
+        upload_to="certificates/", 
+        blank=True, 
+        null=True
+    )
+
+    def __str__(self):
+        return f"Certificate {self.certificate_id} for {self.enrollment.user}"
+
+    class Meta:
+        ordering = ["-issued_at"]
+        verbose_name = "Certificate"
+        verbose_name_plural = "Certificates"

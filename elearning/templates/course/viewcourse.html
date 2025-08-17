@@ -1,11 +1,10 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} 
 {% block title %}<title>{{ course.title }} | Course Details</title>{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto p-6">
     <!-- Course Header -->
     <div class="flex justify-center items-center lg:grid-cols-3 gap-2 bg-white p-6 ml-6 rounded-xl shadow-md">
-        <!-- Left: Course Info -->
         <div class="lg:col-span-2">
             <h1 class="text-3xl font-bold mb-2">{{ course.title }}</h1>
             <p class="text-gray-600">{{ course.get_category_display }} • {{ course.get_level_display }}</p>
@@ -17,10 +16,10 @@
             </div>
         </div>
 
-        <!-- Right: Thumbnail + Purchase Box -->
+        <!-- Right -->
         <div class="w-full flex flex-col items-center justify-start bg-gray-50 p-6 rounded-lg shadow">
             {% if course.thumbnail_img %}
-                <img src="{{ course.thumbnail_img.url }}" alt="{{ course.title }}" class="rounded-xl  object-cover">
+                <img src="{{ course.thumbnail_img.url }}" alt="{{ course.title }}" class="rounded-xl object-cover">
             {% else %}
                 <img src="https://via.placeholder.com/400x250" class="rounded-xl w-full h-48 object-cover">
             {% endif %}
@@ -28,10 +27,18 @@
             <p class="text-2xl font-bold text-indigo-600 mt-4">Rs. {{ course.price }}</p>
 
             {% if user.is_authenticated %}
-                <a href="{% url 'process_payment' course.id %}" 
-                   class="mt-4 w-full text-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                   Proceed to Payment
-                </a>
+                {% if purchased %}
+                    <p class="mt-4 text-green-600 font-semibold">✅ You are already enrolled in this course</p>
+                    <a href="{% url 'course_content' course.id %}" 
+                       class="mt-2 w-full text-center bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition">
+                        Go to Course
+                    </a>
+                {% else %}
+                    <a href="{% url 'process_payment' course.id %}" 
+                       class="mt-4 w-full text-center bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                       Proceed to Payment
+                    </a>
+                {% endif %}
             {% else %}
                 <a href="{% url 'login' %}" 
                    class="mt-4 w-full text-center bg-blue-400 border text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-500 transition">
@@ -40,63 +47,89 @@
             {% endif %}
         </div>
     </div>
-<!-- course  lecture -->
-   <div class="mt-10 bg-white p-6 rounded-xl shadow">
-    <h2 class="text-2xl font-semibold mb-4">📚 Course Content</h2>
-    <p class="text-gray-600 mb-6">
-        {{ sections.count }} sections • {{ total_lectures }} lectures
-    </p>
 
-   {% for section in sections %}
-<div class="border rounded-lg mb-3">
-    <!-- Section Toggle -->
-    <button class="section-toggle w-full flex justify-between items-center py-3 px-4 font-semibold bg-gray-50 hover:bg-gray-100">
-        <span>{{ section.title }}</span>
-        <span class="text-gray-500">{{ section.lectures.count }} lectures</span>
-    </button>
+    <!-- Course Content -->
+    <div class="mt-10 bg-indigo-100 p-6 rounded-xl shadow">
+        <h2 class="text-2xl font-semibold mb-4">📚 Course Content</h2>
+        <p class="text-gray-600 mb-6">
+            {{ sections.count }} sections • {{ total_lectures }} lectures
+        </p>
 
-    <div class="section-content hidden pl-4 pb-3">
-        {% for lecture in section.lectures.all %}
-        <div class="py-3 border-b last:border-none">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center">
-                    {% if lecture.video %} 🎥 {% else %} 📄 {% endif %}
-                    <p class="ml-2">{{ lecture.title }}</p>
-                    {% if lecture.is_previewable %}
-                        <span class="text-green-600 ml-3 italic">Preview</span>
+        {% for section in sections %}
+        <div class="border rounded-lg mb-3">
+            <button class="section-toggle w-full flex justify-between items-center py-3 px-4 font-semibold bg-gray-50 hover:bg-gray-100">
+                <span>{{ section.title }}</span>
+                <span class="text-gray-500">{{ section.lectures.count }} lectures</span>
+            </button>
+
+            <div class="section-content hidden pl-4 pb-3">
+                {% for lecture in section.lectures.all %}
+                <div class="py-3 border-b last:border-none">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            {% if lecture.video %} 🎥 {% else %} 📄 {% endif %}
+                            <p class="ml-2">{{ lecture.title }}</p>
+                            {% if lecture.is_previewable %}
+                                <span class="text-green-600 ml-3 italic">Preview</span>
+                            {% endif %}
+                        </div>
+                        {% if lecture.is_previewable and lecture.video %}
+                        <button class="preview-toggle text-sm text-indigo-600 hover:underline">▶ View</button>
+                        {% endif %}
+                    </div>
+                    {% if lecture.is_previewable and lecture.video %}
+                    <div class="preview-content hidden mt-2">
+                        <video controls class="w-full rounded-lg">
+                            <source src="{{ lecture.video.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
                     {% endif %}
                 </div>
-
-                <!-- Preview Toggle Button -->
-                {% if lecture.is_previewable and lecture.video %}
-                <button class="preview-toggle text-sm text-indigo-600 hover:underline m-">
-                    ▶ View
-                </button>
-                {% endif %}
+                {% empty %}
+                <p class="text-sm text-gray-500 p-3">No lectures yet</p>
+                {% endfor %}
             </div>
-
-            <!-- Collapsible Preview Video -->
-            {% if lecture.is_previewable and lecture.video %}
-            <div class="preview-content hidden mt-2">
-                <video controls class="w-full rounded-lg">
-                    <source src="{{ lecture.video.url }}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-            {% endif %}
         </div>
         {% empty %}
-        <p class="text-sm text-gray-500 p-3">No lectures yet</p>
+        <p class="text-sm text-gray-500">No sections yet</p>
         {% endfor %}
     </div>
-</div>
-{% empty %}
-<p class="text-sm text-gray-500">No sections yet</p>
-{% endfor %}
 
-</div>
+    <!-- Reviews -->
+    <div class="mt-10 bg-green-100 p-6 rounded-xl shadow">
+        <h2 class="text-2xl font-semibold mb-4">⭐ Student Reviews</h2>
 
-<!-- Expand/Collapse Script -->
+        <div id="review-summary" class="mb-6 text-lg font-medium text-gray-700">
+            Loading reviews...
+        </div>
+
+        {% if purchased and user.role == "student" %}
+        <div class="mb-6">
+            <h3 class="font-semibold mb-2">Write a Review</h3>
+            <div class="flex items-center mb-2">
+                <select id="review-rating" class="border rounded p-2">
+                    <option value="5">★★★★★</option>
+                    <option value="4">★★★★☆</option>
+                    <option value="3">★★★☆☆</option>
+                    <option value="2">★★☆☆☆</option>
+                    <option value="1">★☆☆☆☆</option>
+                </select>
+            </div>
+            <textarea id="review-comment" class="w-full border rounded p-2" placeholder="Share your experience..."></textarea>
+            <button id="submit-review" 
+                class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                Post Review
+            </button>
+        </div>
+        {% endif %}
+
+        <div id="reviews-list" class="space-y-4"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     // Section expand/collapse
@@ -106,17 +139,115 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Lecture preview expand/collapse
+    // Lecture preview toggle
     document.querySelectorAll(".preview-toggle").forEach(btn => {
         btn.addEventListener("click", () => {
             const previewContent = btn.closest("div").nextElementSibling;
             previewContent.classList.toggle("hidden");
-
-            // toggle button text ▶ / ▼
             btn.textContent = previewContent.classList.contains("hidden") ? "▶ View" : "▼ Hide";
         });
     });
+
+    // Reviews
+    const courseId = {{ course.id }};
+    const reviewsList = document.getElementById("reviews-list");
+    const summaryBox = document.getElementById("review-summary");
+
+    // ✅ Fix: Pass empty string if unauthenticated
+    const currentUser = {% if user.is_authenticated %}"{{ user.full_name|escapejs }}"{% else %}""{% endif %};
+
+    function loadReviews() {
+        fetch(`/course/${courseId}/reviews/`)
+        .then(res => res.json())
+        .then(data => {
+            summaryBox.textContent = `${data.avg_rating} ★ (${data.total_reviews} reviews)`;
+            reviewsList.innerHTML = "";
+            data.reviews.forEach(r => {
+                const isOwner = (r.user__full_name === currentUser);
+                reviewsList.innerHTML += `
+                  <div class="p-4 border rounded-lg shadow-sm" id="review-${r.id}">
+                    <div class="flex justify-between items-center">
+                      <span class="font-semibold">${r.user__full_name}</span>
+                      <span class="text-yellow-500">${"★".repeat(r.rating)}</span>
+                    </div>
+                    <p class="mt-1 text-gray-600" id="comment-${r.id}">${r.comment || ""}</p>
+                    <small class="text-gray-400">${new Date(r.created_at).toLocaleDateString()}</small>
+                    ${isOwner ? `
+                      <div class="mt-2 flex space-x-2">
+                        <button onclick="editReview(${r.id}, ${r.rating}, '${r.comment?.replace(/'/g,"\\'") || ""}')" 
+                          class="text-blue-600 hover:underline text-sm">Edit</button>
+                        <button onclick="deleteReview(${r.id})" 
+                          class="text-red-600 hover:underline text-sm">Delete</button>
+                      </div>
+                    ` : ""}
+                  </div>`;
+            });
+        });
+    }
+
+    loadReviews();
+
+    // Submit Review
+    const submitBtn = document.getElementById("submit-review");
+    if (submitBtn) {
+        submitBtn.addEventListener("click", () => {
+            const rating = document.getElementById("review-rating").value;
+            const comment = document.getElementById("review-comment").value;
+            fetch(`/course/${courseId}/reviews/create/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                body: new URLSearchParams({ rating, comment })
+            })
+            .then(res => res.json())
+            .then(() => {
+                loadReviews();
+                document.getElementById("review-comment").value = "";
+            });
+        });
+    }
+
+    // Edit Review
+    window.editReview = function(id, rating, comment) {
+        const commentEl = document.getElementById(`comment-${id}`);
+        commentEl.innerHTML = `
+            <textarea id="edit-comment-${id}" class="w-full border rounded p-1">${comment}</textarea>
+            <select id="edit-rating-${id}" class="border rounded p-1 mt-2">
+                <option value="5" ${rating==5?"selected":""}>★★★★★</option>
+                <option value="4" ${rating==4?"selected":""}>★★★★☆</option>
+                <option value="3" ${rating==3?"selected":""}>★★★☆☆</option>
+                <option value="2" ${rating==2?"selected":""}>★★☆☆☆</option>
+                <option value="1" ${rating==1?"selected":""}>★☆☆☆☆</option>
+            </select>
+            <div class="mt-2 space-x-2">
+                <button onclick="saveReview(${id})" class="px-3 py-1 bg-green-500 text-black rounded">Save</button>
+                <button onclick="loadReviews()" class="px-3 py-1 bg-gray-300 rounded">Cancel</button>
+            </div>
+        `;
+    }
+
+    // Save Review
+    window.saveReview = function(id) {
+        const rating = document.getElementById(`edit-rating-${id}`).value;
+        const comment = document.getElementById(`edit-comment-${id}`).value;
+        fetch(`/reviews/${id}/update/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            body: new URLSearchParams({ rating, comment })
+        })
+        .then(res => res.json())
+        .then(() => loadReviews());
+    }
+
+    // Delete Review
+    window.deleteReview = function(id) {
+        if (!confirm("Delete this review?")) return;
+        fetch(`/reviews/${id}/delete/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+        })
+        .then(res => res.json())
+        .then(() => loadReviews());
+    }
 });
 </script>
-
 {% endblock %}

@@ -34,7 +34,7 @@
               <a href="{% url 'list_courses' %}" class="block px-4 py-2 hover:bg-gray-100">My Courses</a>
             {% elif request.user.role == 'student' %}
               <a href="{% url 'student_dashboard' %}" class="block px-4 py-2 hover:bg-gray-100">Dashboard</a>
-              <a href="#" class="block px-4 py-2 hover:bg-gray-100">Enrolled Courses</a>
+              <a href="{% url 'enrolled_courses' %}" class="block px-4 py-2 hover:bg-gray-100">Enrolled Courses</a>
             {% endif %}
             <a href="{% url 'change_password' %}" class="block px-4 py-2 hover:bg-gray-100">Change Password</a>
             <a href="{% url 'profile' %}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>

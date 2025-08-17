@@ -11,6 +11,7 @@ urlpatterns = [
     path('change_password/', views.change_password, name='change_password'),
     path('publish/', views.published_courses, name='published_courses'),
 
+    path("student/enrolled-courses/", views.enrolled_courses, name="enrolled_courses"),
 
     # Course CRUD
     path('course/create/', views.course_create , name='create_courses'),
@@ -39,6 +40,16 @@ urlpatterns = [
     path('course/<int:course_id>/payment/', views.process_payment, name="process_payment"),
     path('course/<int:course_id>/payment/success/', views.payment_success, name='payment_success'),
     path('course/<int:course_id>/payment/failure/', views.payment_failure, name='payment_failure'),
+
+    # Review
+    path("course/<int:course_id>/reviews/",   views.review_list, name="review_list"),
+    path("course/<int:course_id>/reviews/create/",   views.review_create, name="review_create"),
+    path("reviews/<int:review_id>/update/",   views.review_update, name="review_update"),
+    path("reviews/<int:review_id>/delete/",   views.review_delete, name="review_delete"),
+
+    # Certificate
+    path("course/<int:course_id>/certificate/", views.view_certificate, name="view_certificate")
+
 ]
 
 

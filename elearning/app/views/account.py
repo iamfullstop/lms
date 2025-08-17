@@ -3,8 +3,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from app.models import User,Course
+from app.models import User,Course,Enrollment,Review,Certificate
 from django.contrib.auth import authenticate
+from django.db.models import Exists, OuterRef
+
 
 @login_required
 def profile(request):
@@ -69,9 +71,39 @@ def logout_view(request):
     logout(request)
     return redirect('/')
 
+
 @login_required
 def student_dashboard(request):
-    return render(request, 'home/student_dashboard.html')
+    user = request.user
+
+    # Base queryset: this student's enrollments + the course
+    enrollments_qs = (
+        Enrollment.objects
+        .filter(user=user)
+        .select_related("course", "course__instructor")
+    )
+
+    # Annotate whether each enrollment has a certificate already
+    cert_exists_subquery = Certificate.objects.filter(enrollment_id=OuterRef("pk"))
+    enrollments_qs = enrollments_qs.annotate(has_certificate=Exists(cert_exists_subquery))
+
+    # Stats
+    total_enrolled = enrollments_qs.count()
+    certificates_count = Certificate.objects.filter(enrollment__user=user).count()
+    completed_count = certificates_count  # treat "completed" == has certificate
+    reviews_count = Review.objects.filter(user=user).count()
+
+    # Recently enrolled (last 5 by purchase time)
+    recent_enrolled = enrollments_qs.order_by("-purchased_at")[:5]
+
+    context = {
+        "total_enrolled": total_enrolled,
+        "completed_count": completed_count,
+        "certificates_count": certificates_count,
+        "reviews_count": reviews_count,
+        "recent_enrolled": recent_enrolled,
+    }
+    return render(request, "home/student_dashboard.html", context)
 
 @login_required
 def instructor_dashboard(request):

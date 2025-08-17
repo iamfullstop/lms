@@ -5,15 +5,176 @@
 {% endblock %}
 
 {% block content %}
-<div class="flex">
-  {% include "sidebar.html" %}
-  <main class="flex-1 p-6 overflow-auto">
+<div class="flex h-screen bg-green-500">
 
+  <main class="flex-1 overflow-y-auto items-center p-6 ml-[18rem]">
+    <!-- Welcome Banner -->
+    <div class="bg-indigo-600 rounded-xl p-6 text-white mb-6 shadow-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold">Welcome back, {{ request.user.full_name }} 👋</h1>
+          <p class="opacity-90">Here’s your learning progress and enrolled courses</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="bg-indigo-400/40 p-2 rounded-full">
+            <i class="fas fa-bell text-xl"></i>
+          </div>
+          <div class="flex items-center space-x-2">
+            {% if request.user.profile_picture %}
+              <img src="{{ request.user.profile_picture.url }}" alt="Profile" class="w-10 h-10 rounded-full object-cover">
+            {% else %}
+              <div class="w-10 h-10 rounded-full bg-indigo-400 flex items-center justify-center">
+                <span class="text-black font-medium">
+                  {% if request.user.full_name %}{{ request.user.full_name|first|upper }}{% else %}U{% endif %}
+                </span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <div class="max-w-md mx-auto bg-white p-6 shadow-md rounded-md">
-      <div class="text-center">
-        <h1 class="text-xl font-semibold mb-4">Welcome, {{ request.user.full_name }} 🧑‍🏫</h1>
-        <p>This is Student Dashboard content area.</p>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="p-6 rounded-xl shadow-lg bg-rose-100 text-black
+">
+        <p class="text-sm opacity-90">Enrolled Courses</p>
+        <h3 class="text-2xl font-bold mt-1">{{ total_enrolled }}</h3>
+        <i class="fas fa-book-open text-2xl mt-2"></i>
+      </div>
+
+      <div class="p-6 rounded-xl shadow-lg bg-green-200 text-black">
+        <p class="text-sm opacity-90">Completed Courses</p>
+        <h3 class="text-2xl font-bold mt-1">{{ completed_count }}</h3>
+        <i class="fas fa-check-circle text-2xl mt-2"></i>
+      </div>
+
+      <div class="p-6 rounded-xl shadow-lg bg-purple-800 text-black">
+        <p class="text-sm opacity-90">Certificates Earned</p>
+        <h3 class="text-2xl font-bold mt-1">{{ certificates_count }}</h3>
+        <i class="fas fa-award text-2xl mt-2"></i>
+      </div>
+
+      <div class="p-6 rounded-xl shadow-lg bg-cyan-600 text-black">
+        <p class="text-sm opacity-90">Reviews Written</p>
+        <h3 class="text-2xl font-bold mt-1">{{ reviews_count }}</h3>
+        <i class="fas fa-star text-2xl mt-2"></i>
+      </div>
+    </div>
+
+    <!-- Quick Actions + Recent Enrollments -->
+    <div class="grid space-x-2 grid-cols-1 md:grid-cols-2 gap-2">
+      <!-- Quick Actions -->
+      <div class="p-6 rounded-xl shadow-lg bg-green-100 text-black">
+        <h2 class="text-lg font-semibold mb-4">Quick Actions</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <a href="{% url 'enrolled_courses' %}"
+             class="p-4 rounded-lg bg-indigo-500 hover:bg-indigo-100 transition text-center">
+            <i class="fas fa-graduation-cap text-2xl mb-2"></i>
+            <span class="text-sm font-medium">My Enrollments</span>
+          </a>
+
+          <a href="{% url 'profile' %}"
+             class="p-4 rounded-lg bg-purple-500 hover:bg-purple-400 transition text-center">
+            <i class="fas fa-user text-2xl mb-2"></i>
+            <span class="text-sm font-medium">Profile</span>
+          </a>
+
+          <a href="{% url 'change_password' %}"
+             class="p-4 rounded-lg bg-red-500 hover:bg-red-400 transition text-center">
+            <i class="fas fa-lock text-2xl mb-2"></i>
+            <span class="text-sm font-medium">Security</span>
+          </a>
+
+          <a href="{% url 'published_courses' %}"
+             class="p-4 rounded-lg bg-green-500 hover:bg-green-400 transition text-center">
+            <i class="fas fa-compass text-2xl mb-2"></i>
+            <span class="text-sm font-medium">Browse Catalog</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Enrolled Courses -->
+      <div class="rounded-xl shadow-lg bg-indigo-100 overflow-x-auto">
+        <div class="p-6 border-b border-indigo-200 flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-indigo-900">Recently Enrolled Courses</h2>
+          <a href="{% url 'enrolled_courses' %}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">View All</a>
+        </div>
+
+        <table class="min-w-full divide-y divide-indigo-200">
+          <thead class="bg-indigo-200">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-700 uppercase">Thumbnail</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-700 uppercase">Course</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-700 uppercase">Enrolled</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-700 uppercase">Certificate</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-indigo-700 uppercase">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-indigo-200">
+            {% for enrollment in recent_enrolled %}
+            <tr class="hover:bg-indigo-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                {% if enrollment.course.thumbnail_img %}
+                  <img class="h-10 w-10 rounded-md object-cover"
+                       src="{{ enrollment.course.thumbnail_img.url }}"
+                       alt="{{ enrollment.course.title }}">
+                {% else %}
+                  <div class="h-10 w-10 rounded-md flex items-center justify-center bg-indigo-300 text-indigo-800">
+                    <i class="fas fa-book"></i>
+                  </div>
+                {% endif %}
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="font-medium text-indigo-900">{{ enrollment.course.title }}</div>
+                <div class="text-sm text-indigo-600">
+                  {{ enrollment.course.get_category_display }} • {{ enrollment.course.get_level_display }}
+                </div>
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-indigo-600">
+                {{ enrollment.purchased_at|date:"M d, Y" }}
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap">
+                {% if enrollment.has_certificate %}
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-500 text-white">
+                    Available
+                  </span>
+                {% elif enrollment.course.offer_certificate %}
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-400 text-white">
+                    Not issued yet
+                  </span>
+                {% else %}
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-400 text-white">
+                    Not offered
+                  </span>
+                {% endif %}
+              </td>
+
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+                <a href="{% url 'view_course' enrollment.course.id %}" class="text-blue-700 hover:text-blue-900">Continue</a>
+
+                {% if enrollment.has_certificate %}
+                  <a href="{% url 'view_certificate' enrollment.course.id %}" class="text-green-600 hover:text-green-800">
+                    Certificate
+                  </a>
+                {% else %}
+                  <span class="text-indigo-400 cursor-not-allowed">Certificate</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="px-6 py-6 text-center text-sm text-indigo-600">
+                You haven’t enrolled in any course yet.
+                <a href="{% url 'published_courses' %}" class="text-blue-600 hover:underline">Explore courses</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
 

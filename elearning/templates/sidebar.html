@@ -25,13 +25,20 @@
             <i class="fa-solid fa-lock"></i><span>Change Password</span>
         </a>
         {% elif request.user.role == 'student' %}
-        <a href="{% url 'student_dashboard' %}"
-            class="sidebar-link {% if request.path == '/student/dashboard/' or request.path == '/' %}active{% endif %}">
-            <i class="fa-solid fa-home"></i><span>Dashboard</span>
-        </a>
-        <a href="#" class="sidebar-link {% if request.path == '/student/enrolled-courses/' %}active{% endif %}">
+            <a href="{% url 'student_dashboard' %}"
+                class="sidebar-link {% if request.path == '/student/dashboard/' or request.path == '/' %}active{% endif %}">
+                <i class="fa-solid fa-home"></i><span>Dashboard</span>
+            </a>
+
+           <a href="{% url 'profile' %}"
+            class="sidebar-link {% if request.path == '/home/profile/' %}active{% endif %}">
+            <i class="fa-solid fa-user"></i><span>Profile</span>
+         </a>
+
+        <a href="{% url 'enrolled_courses' %}"  class="sidebar-link {% if request.path == '/student/enrolled-courses/' %}active{% endif %}">
             <i class="fa-solid fa-book"></i><span>Enrolled Courses</span>
-        </a>
+            </a>
+
         <a href="#" class="sidebar-link {% if request.path == '/student/certificates/' %}active{% endif %}">
             <i class="fa-solid fa-award"></i><span>My Certificates</span>
         </a>

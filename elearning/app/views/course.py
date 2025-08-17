@@ -1,10 +1,14 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from ..models import Course, Section, Enrollment
+from ..models import Course, Section, Enrollment,Certificate
 import hmac, hashlib, base64, json
 from django.utils import timezone
 
+@login_required
+def enrolled_courses(request):
+    enrollments = Enrollment.objects.filter(user=request.user).select_related("course", "course__instructor")
+    return render(request, "course/enrollcourse.html", {"enrollments": enrollments})
 
 def published_courses(request):
     published_courses = Course.objects.filter(is_published=True).order_by("-created_at")
@@ -73,6 +77,7 @@ def process_payment(request, course_id):
     return render(request, "payment/payment.html", context)
 
 
+
 @login_required
 def payment_success(request, course_id):
     course = get_object_or_404(Course, id=course_id)
@@ -86,17 +91,40 @@ def payment_success(request, course_id):
             esewa_data = {"error": str(e)}
 
     # Enroll the user if payment successful
-    Enrollment.objects.get_or_create(user=request.user, course=course)
+    enrollment, created = Enrollment.objects.get_or_create(user=request.user, course=course)
+
+    # Issue certificate if course allows
+    if course.offer_certificate:
+        Certificate.objects.get_or_create(enrollment=enrollment)
 
     return render(request, 'payment/success.html', {
         'course': course,
         'esewa_data': esewa_data
     })
 
+
 @login_required
 def payment_failure(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     return render(request, 'payment/failure.html', {'course': course})
+
+@login_required
+def view_certificate(request, course_id):
+    enrollment = get_object_or_404(Enrollment, user=request.user, course_id=course_id)
+    if not enrollment.course.offer_certificate:
+        messages.error(request, "This course does not offer certificates.")
+        return redirect("enrolled_courses")
+
+    certificate = getattr(enrollment, "certificate", None)
+    if not certificate:
+        messages.error(request, "No certificate issued yet.")
+        return redirect("enrolled_courses")
+
+    return render(request, "course/certificate.html", {
+        "certificate": certificate,
+        "course": enrollment.course,
+        "user": request.user,
+    })
 
 
 @login_required

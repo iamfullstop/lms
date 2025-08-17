@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block title %}<title>My Enrolled Courses</title>{% endblock %}
+
+{% block content %}
+<div class="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <!-- Page Title -->
+    <h1 class="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-2">
+        🎓 My Enrolled Courses
+    </h1>
+
+    {% if enrollments %}
+    <!-- Course Grid -->
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {% for enrollment in enrollments %}
+        {% with course=enrollment.course %}
+        <div class="bg-white shadow-lg rounded-2xl overflow-hidden hover:shadow-xl transition group relative">
+            <!-- Thumbnail -->
+            <img src="{{ course.thumbnail_img.url|default:'/static/images/default-thumbnail.jpg' }}" 
+                 alt="{{ course.title }}"
+                 class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300">
+            
+            <!-- Course Content -->
+            <div class="p-5 flex flex-col justify-between h-52">
+                <!-- Title + Instructor -->
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900 truncate group-hover:text-blue-600 transition">
+                        {{ course.title }}
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1">By {{ course.instructor.full_name }}</p>
+                    <p class="text-xs text-blue-600 mt-2">{{ course.get_level_display }} • {{ course.get_category_display }}</p>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="mt-4">
+                    <span class="block text-xs text-gray-500 mb-2">
+                        Enrolled: {{ enrollment.purchased_at|date:"M d, Y" }}
+                    </span>
+                    
+                    <div class="flex font-bold  justify-between items-center gap-2">
+                        <!-- Continue Course -->
+                        <a href="{% url 'view_course' course.id %}" 
+                           class="flex-1 text-center text-sm bg-blue-600 text-white m-2 p-2  rounded-lg hover:bg-blue-700 transition">
+                            Continue →
+                        </a>
+
+                        <!-- View Certificate (only if available) -->
+                       
+
+                        {% comment %} {% if enrollment.certificate %} {% endcomment %}
+                         {% if course.offer_certificate %}
+                            <a href="{% url 'view_certificate' course.pk %}" class="flex-1 text-center text-sm bg-green-100 text-black  p-2  mx-2 rounded-lg hover:bg-green-700 transition">  🎖 Certificate</a>
+                        {% endif %}
+
+
+                    </div>
+                </div> 
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="text-center py-16 bg-white rounded-2xl shadow-md">
+        <h2 class="text-xl font-semibold text-gray-700">No enrolled courses yet 📭</h2>
+        <p class="text-gray-500 mt-2">Browse our catalog and start learning today.</p>
+        <a href="{% url 'list_courses' %}" 
+           class="mt-6 inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Explore Courses
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

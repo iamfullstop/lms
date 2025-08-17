@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block title %}<title>Certificate of Completion</title>{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+    <div id="certificate" class="bg-white shadow-2xl rounded-2xl border-8 border-blue-600 w-full max-w-3xl p-10 text-center relative">
+        
+        <!-- Header -->
+        <h1 class="text-4xl font-bold text-gray-800 uppercase tracking-widest">Certificate of Completion</h1>
+        <p class="mt-4 text-lg text-gray-600">This certifies that</p>
+        
+        <!-- Student Name -->
+        <h2 class="text-3xl font-semibold mt-2 text-gray-900">{{ user.full_name }}</h2>
+        
+        <!-- Course Info -->
+        <p class="mt-4 text-lg text-gray-700">has successfully completed the course</p>
+        <h3 class="text-2xl font-bold mt-2 text-blue-700">"{{ certificate.enrollment.course.title }}"</h3>
+        
+        <!-- Footer Info -->
+        <div class="mt-8 text-sm text-gray-500">
+            <p>Certificate ID: <span class="font-mono">{{ certificate.certificate_id }}</span></p>
+            <p>Issued on {{ certificate.issued_at|date:"F j, Y" }}</p>
+        </div>
+
+        <!-- Decorative Bottom Border -->
+        <div class="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-r from-blue-600 via-green-500 to-blue-600 rounded-b-lg"></div>
+    </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="text-center mt-8">
+    <button onclick="downloadCertificate()" 
+            class="px-6 py-3 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition">
+        ⬇ Download PDF
+    </button>
+    <a href="{% url 'enrolled_courses' %}" class="ml-4 px-6 py-3 bg-gray-200 text-gray-800 rounded-xl shadow hover:bg-gray-300 transition">
+   ← Back to Courses
+    </a>
+</div>
+{% endblock  %}
+
+{% block script %}
+
+<!-- JS: html2pdf for PDF Download -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+<script>
+function downloadCertificate() {
+    const element = document.getElementById("certificate");
+    const opt = {
+        margin:       0.5,
+        filename:     "certificate-{{ certificate.certificate_id }}.pdf",
+        image:        { type: "jpeg", quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: "in", format: "a4", orientation: "landscape" }
+    };
+    html2pdf().set(opt).from(element).save();
+}
+</script>
+{% endblock %}
